@@ -15,7 +15,7 @@ def setup_seed(seed):
 
 setup_seed(42)
 
-current_folder = 'DUO-ACP'
+current_folder = '.'
 tmp_dir = f'{current_folder}/tmp'
 result_dir = f'{current_folder}/result'
 all_labels = ['Colon','Breast','Cervix','Lung','Skin','Prostate','Blood']
@@ -88,7 +88,7 @@ def show_PCA1(data, labels, train_epoch, save_dir):
     plt.grid()
     plt.savefig(save_dir)
     plt.close()
-
+'''
 def show_PCA2(data_list, labels, train_epoch, save_dir):
     # 创建PCA模型，将数据降到2维
     pca = PCA(n_components=1)
@@ -115,7 +115,7 @@ def show_PCA2(data_list, labels, train_epoch, save_dir):
     plt.grid()
     plt.savefig(save_dir)
     plt.close()
-
+'''
 
 def draw_PCA(interal_list, labels, train_epoch):
     x1 = torch.vstack(interal_list[0])

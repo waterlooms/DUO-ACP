@@ -7,10 +7,9 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import DataLoader
 
 from model import ESM_Transformer_1, ESM_Transformer_2, ESM_Transformer_3, ESM_Transformer_4
-from data import MyDataset
 from util import *
 
 str_time = datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S')
@@ -118,9 +117,9 @@ def train(train_dataset, val_dataset, model, lr, save_dir, data_type, stop_sign 
 
 def predict(test_dataset, model, data_type, name, idx):
     test_loader = DataLoader(test_dataset, batch_size=1, shuffle=False)
-    model_path = f'{tmp_dir}/{data_type}/{name}_{idx}', 
-    model.load_state_dict(torch.load(model_path))
+    model_path = f'{tmp_dir}/{data_type}/{name}_{idx}' 
     print(f'Loaded model from {model_path}')
+    model.load_state_dict(torch.load(model_path))
 
     runner = Runner(model)
     val_loss, outputs, labels, internal_list = runner.val(test_loader)
@@ -156,8 +155,6 @@ def train_model(train_dataset, val_dataset, data_type, idx, base_lr):
         stop_sign = 'valid',
     )
     
-    save_dir1 = f'{tmp_dir}/{data_type}/model1_{idx}'
-    save_dir2 = f'{tmp_dir}/{data_type}/model2_{idx}'
     model3 = ESM_Transformer_3(data_type)
     model3.load_model1(save_dir1)
     model3.load_model2(save_dir2)
@@ -173,8 +170,6 @@ def train_model(train_dataset, val_dataset, data_type, idx, base_lr):
     )
     
     model4 = ESM_Transformer_4(data_type)
-    save_dir1 = f'{tmp_dir}/{data_type}/model1_{idx}'
-    save_dir2 = f'{tmp_dir}/{data_type}/model2_{idx}'
     model4.load_model1(save_dir1)
     model4.load_model2(save_dir2)
     save_dir4 = f'{tmp_dir}/{data_type}/model4_{idx}'
@@ -218,39 +213,3 @@ def predict_model(test_dataset, data_type, idx = 0):
         name = 'model4', 
         idx = idx
     )
-
-
-def test_binary():
-    data_type='binary'
-    train_dataset = MyDataset(
-        data_dir = 'ACP_datasets/ACP-Mixed-80-train.tsv', 
-        data_type=data_type
-    )
-    test_dataset = MyDataset(
-        data_dir = 'ACP_datasets/ACP-Mixed-80-test.tsv', 
-        data_type=data_type
-    )
-
-    for idx in range(5):
-        split_train_dataset, val_dataset = random_split(train_dataset, [0.85, 0.15])
-        train_model(split_train_dataset, val_dataset, data_type, idx = idx)
-        predict_model(test_dataset, data_type, idx = idx)
-
-    
-def test_multiclass():
-    data_type='multiclass'
-    for idx in range(1, 11):
-        train_dataset = MyDataset(
-            data_dir = f'MLC_datasets/10fold/train_{idx}.fasta', 
-            data_type=data_type
-        )
-        test_dataset = MyDataset(
-            data_dir = f'MLC_datasets/10fold/test_{idx}.fasta', 
-            data_type=data_type
-        )
-        split_train_dataset, val_dataset = random_split(train_dataset, [0.85, 0.15])
-        train_model(split_train_dataset, val_dataset, data_type, idx = idx, base_lr=1e-5)
-        predict_model(test_dataset, data_type, idx = idx)
-    
-if __name__ == '__main__':
-    test_multiclass()

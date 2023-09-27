@@ -1,5 +1,5 @@
 result/*
 tmp/*
 *.pyc
-datasets/ACP-Mixed80-5fold/*
+datasets/ACP-Mixed-80-5fold/*
 datasets/ACP-MLC-10fold/*
