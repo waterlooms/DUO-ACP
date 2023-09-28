@@ -81,43 +81,15 @@ def show_PCA1(data, labels, train_epoch, save_dir):
 
     # 可视化降维后的数据
     plt.figure(figsize=(8, 6))
-    plt.title(f'Trained for {train_epoch} epochs')
+#    plt.title(f'Trained for {train_epoch} epochs')
     plt.scatter(data_true[:, 0], data_true[:, 1], label='True')
     plt.scatter(data_false[:, 0], data_false[:, 1], label='False')
     plt.legend()
     plt.grid()
     plt.savefig(save_dir)
     plt.close()
-'''
-def show_PCA2(data_list, labels, train_epoch, save_dir):
-    # 创建PCA模型，将数据降到2维
-    pca = PCA(n_components=1)
-    data_2d1 = pca.fit_transform(data_list[0])
-    data_2d2 = pca.fit_transform(data_list[1])
 
-    data_true1 = data_2d1[labels==1]
-    data_false1 = data_2d1[labels==0]
-
-    data_true2 = data_2d2[labels==1]
-    data_false2 = data_2d2[labels==0]
-
-    # 查看PCA的主成分（特征向量）
-    components = pca.components_
-#    print("Principal Components:")
-#    print(components)
-
-    # 可视化降维后的数据
-    plt.figure(figsize=(8, 6))
-    plt.title(f'Trained for {train_epoch} epochs')
-    plt.scatter(data_true1, data_true2, label='True')
-    plt.scatter(data_false1, data_false2, label='False')
-    plt.legend()
-    plt.grid()
-    plt.savefig(save_dir)
-    plt.close()
-'''
-
-def draw_PCA(interal_list, labels, train_epoch):
+def draw_PCA(interal_list, labels, train_epoch, dir = tmp_dir):
     x1 = torch.vstack(interal_list[0])
     x2 = torch.vstack(interal_list[1])
     show_PCA1(x1, labels[0], train_epoch, f'{tmp_dir}/PCA1.png')

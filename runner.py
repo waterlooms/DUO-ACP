@@ -68,7 +68,8 @@ class Runner:
         labels_list = np.vstack(labels_list)
         return val_loss, outputs_list, labels_list, internal_list
 
-def train(train_dataset, val_dataset, model, lr, save_dir, data_type, stop_sign = 'train'):
+def train(train_dataset, val_dataset, model, lr, data_type, model_idx, round_idx, stop_sign = 'train'):
+    
     train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True, drop_last=True)
     val_loader = DataLoader(val_dataset, batch_size=1, shuffle=False, drop_last=False)
     
@@ -77,6 +78,7 @@ def train(train_dataset, val_dataset, model, lr, save_dir, data_type, stop_sign 
     total_epoch, patience = 300, 40
 
     runner = Runner(model, lr)
+    save_dir = f'{tmp_dir}/{data_type}/model{model_idx}_{round_idx}'
     with tqdm(total=total_epoch) as pbar:
         for epoch in range(total_epoch):
             train_loss, train_outputs, train_labels, train_internal = runner.train(train_loader)
@@ -113,6 +115,9 @@ def train(train_dataset, val_dataset, model, lr, save_dir, data_type, stop_sign 
                 draw_loss([train_loss_list, val_loss_list], ['train_loss', 'val_loss'])
                 draw_auc_epoch([auc_list, acc_list], ['AUC', 'ACC'])
                 draw_PCA([train_internal, test_internal], [train_labels[:, 1], test_labels[:, 1]], epoch + 1)
+            if epoch == 10:
+                show_PCA1(torch.vstack(train_internal), train_labels[:, 1], '10', f'{tmp_dir}/PCA{model_idx}_1.png')
+    show_PCA1(torch.vstack(train_internal), train_labels[:, 1], 'Final', f'{tmp_dir}/PCA{model_idx}_2.png')
     print(f"Best model is from epoch {best_idx}: {round(best_loss,3)}")
 
 def predict(test_dataset, model, data_type, name, idx):
@@ -132,54 +137,58 @@ def predict(test_dataset, model, data_type, name, idx):
 
 def train_model(train_dataset, val_dataset, data_type, idx, base_lr):
     model1 = ESM_Transformer_1(data_type)
-    save_dir1 = f'{tmp_dir}/{data_type}/model1_{idx}'
     train(
         train_dataset = train_dataset, 
         val_dataset = val_dataset, 
         model = model1, 
         lr = 5 * base_lr, 
-        save_dir = save_dir1, 
         data_type = data_type,
+        model_idx = 1,
+        round_idx = idx,
         stop_sign = 'valid',
     )
 
     model2 = ESM_Transformer_2(data_type)
-    save_dir2 = f'{tmp_dir}/{data_type}/model2_{idx}'
     train(
         train_dataset = train_dataset, 
         val_dataset = val_dataset, 
         model = model2, 
         lr = 5 * base_lr, 
-        save_dir = save_dir2, 
         data_type = data_type,
+        model_idx = 2,
+        round_idx = idx,
         stop_sign = 'valid',
     )
     
+    save_dir1 = f'{tmp_dir}/{data_type}/model{1}_{idx}'
+    save_dir2 = f'{tmp_dir}/{data_type}/model{2}_{idx}'
+    '''
     model3 = ESM_Transformer_3(data_type)
     model3.load_model1(save_dir1)
     model3.load_model2(save_dir2)
-    save_dir3 = f'{tmp_dir}/{data_type}/model3_{idx}'
     train(
         train_dataset = train_dataset, 
         val_dataset = val_dataset, 
         model = model3, 
         lr = base_lr, 
-        save_dir = save_dir3, 
         data_type = data_type,
+        model_idx = 3,
+        round_idx = idx,
         stop_sign = 'valid',
     )
+    '''
     
     model4 = ESM_Transformer_4(data_type)
     model4.load_model1(save_dir1)
     model4.load_model2(save_dir2)
-    save_dir4 = f'{tmp_dir}/{data_type}/model4_{idx}'
     train(
         train_dataset = train_dataset, 
         val_dataset = val_dataset, 
         model = model4, 
         lr = base_lr, 
-        save_dir = save_dir4, 
         data_type = data_type,
+        model_idx = 4,
+        round_idx = idx,
         stop_sign = 'valid',
     )
     

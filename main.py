@@ -13,7 +13,7 @@ def test_binary():
         data_type=data_type
     )
 
-    for idx in range(5):
+    for idx in range(1):
         split_train_dataset, val_dataset = random_split(train_dataset, [0.8, 0.2])
         train_model(split_train_dataset, val_dataset, data_type, idx = idx, base_lr=2e-6)
         predict_model(test_dataset, data_type, idx = idx)
@@ -70,5 +70,4 @@ def test_case_study_multiclass():
         predict_model(test_dataset, data_type, idx = idx)
 
 if __name__ == '__main__':
-    test_case_study_binary()
-    test_case_study_multiclass()
+    test_binary()
