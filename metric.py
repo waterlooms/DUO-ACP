@@ -18,7 +18,7 @@ def compute_auprc(labels, outputs):
     auc_val = auc(recall, precision)
     return auc_val, precision, recall
 
-def compute_metric(labels, outputs, thres = 0.5):
+def compute_metric(labels, outputs, thres = 0.5, show_detail = True):
     labels, outputs = np.array(labels), np.array(outputs)
     tn, fp, fn, tp = confusion_matrix(labels, outputs > thres).ravel()
     accuracy = (tp + tn) / (tn + fp + fn + tp)
@@ -30,7 +30,8 @@ def compute_metric(labels, outputs, thres = 0.5):
     mcc = matthews_corrcoef(labels, outputs > thres)
     fpr, tpr, _ = roc_curve(labels, outputs)
     auc_val = auc(fpr, tpr)
-    print(f'{round(accuracy, 4)}\t{round(sensitivity, 4)}\t{round(specificity, 4)}\t{round(mcc, 4)}\t{round(auc_val, 4)}')
+    if show_detail:
+        print(f'{round(accuracy, 4)}\t{round(sensitivity, 4)}\t{round(specificity, 4)}\t{round(mcc, 4)}\t{round(auc_val, 4)}')
     return auc_val, fpr, tpr
 
 def compute_metric_labelwise(labels, outputs, thres = 0.5, show_detail = True):
